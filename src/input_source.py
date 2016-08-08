@@ -10,9 +10,13 @@ class CursesInputSource:
         """
         self.key_to_action = {
             curses.KEY_UP: 'PLAYER_UP',
+            119: 'PLAYER_UP', # W
             curses.KEY_DOWN: 'PLAYER_DOWN',
+            115: 'PLAYER_DOWN', # S
             curses.KEY_LEFT: 'PLAYER_LEFT',
+            97: 'PLAYER_LEFT', # A
             curses.KEY_RIGHT: 'PLAYER_RIGHT',
+            100: 'PLAYER_RIGHT', # D
         }
         self.stdscr = stdscr
 
