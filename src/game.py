@@ -1,8 +1,11 @@
 import random
+import time
 
 class Config:
-    def __init__(self, arena_size=(80, 40)):
+    def __init__(self, arena_size, orb_count, tick_rate):
         self.arena_size = arena_size
+        self.orb_count = orb_count
+        self.tick_rate = tick_rate
 
 class Tiles:
     EMPTY = ' '
@@ -20,8 +23,57 @@ class State:
         self.config = config
         self.arena = [[Tiles.EMPTY for y in range(0, config.arena_size[1])] for x in range(0, config.arena_size[0])]
         self.player = Player((config.arena_size[0] // 2, config.arena_size[1] // 2))
+        self.game_over = False
 
     def spawn_orb(self):
         x_pos = random.randint(0, self.config.arena_size[0] - 1)
         y_pos = random.randint(0, self.config.arena_size[1] - 1)
         self.arena[x_pos][y_pos] = Tiles.ORB
+
+    def update_player_position(self):
+        player = self.player
+        if player.direction == 'U':
+            player.position = (player.position[0], player.position[1] - 1)
+        elif player.direction == 'D':
+            player.position = (player.position[0], player.position[1] + 1)
+        elif player.direction == 'L':
+            player.position = (player.position[0] - 1, player.position[1])
+        elif player.direction == 'R':
+            player.position = (player.position[0] + 1, player.position[1])
+
+    def update_failure_state(self):
+        player_x = self.player.position[0]
+        player_y = self.player.position[1]
+
+        # Check for out-of-bounds
+        if (player_x < 0
+                or player_x >= self.config.arena_size[0]
+                or player_y < 0
+                or player_y >= self.config.arena_size[1]):
+            self.game_over = True
+
+class Game:
+    def __init__(self, config, display):
+        self.config = config
+        self.display = display
+        self.state = State(config)
+        for _ in range(0, 3):
+            self.state.spawn_orb()
+
+    def __update(self):
+        self.state.update_player_position()
+        self.state.update_failure_state()
+
+        self.display.draw(self.state)
+
+    def run(self):
+        tick_duration = 1 / self.config.tick_rate
+        last_tick_time = time.time()
+
+        while True:
+            self.__update()
+            current_time = time.time()
+            sleep_time = tick_duration - (current_time - last_tick_time)
+            if sleep_time > 0:
+                time.sleep(sleep_time)
+            last_tick_time = current_time

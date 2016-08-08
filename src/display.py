@@ -63,4 +63,3 @@ class CursesDisplay:
 
         self.arena_win.box()
         self.arena_win.refresh()
-        self.stdscr.getch()
