@@ -54,15 +54,7 @@ class CursesDisplay:
                     pass
 
     def __draw_player(self, state):
-        direction_to_display_char = {
-            'U': curses.ACS_UARROW,
-            'D': curses.ACS_DARROW,
-            'L': curses.ACS_LARROW,
-            'R': curses.ACS_RARROW,
-        }
-
-        display_char = direction_to_display_char[state.player.direction]
-        self.arena_win.addch(state.player.position[1] + 1, state.player.position[0] + 1, display_char)
+        self.arena_win.addch(state.player.position[1] + 1, state.player.position[0] + 1, '@')
 
     def __draw_message(self, message):
         x_offset = (curses.COLS - len(message)) // 2
