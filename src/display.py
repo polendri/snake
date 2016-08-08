@@ -26,7 +26,7 @@ class CursesDisplay:
         y_offset = max(1, (curses.LINES - self.config.arena_size[1] - 2) // 4)
         self.stdscr.addstr(y_offset, x_offset, title)
 
-    def draw(self, state):
+    def __draw_tiles(self, state):
         tile_to_display_char = {
             Tiles.EMPTY: ' ',
             Tiles.ORB: 'o',
@@ -45,6 +45,21 @@ class CursesDisplay:
                     # I could find.
                     # https://stackoverflow.com/questions/37648557/curses-error-add-wch-returned-an-error
                     pass
+
+    def __draw_player(self, state):
+        direction_to_display_char = {
+            'U': curses.ACS_UARROW,
+            'D': curses.ACS_DARROW,
+            'L': curses.ACS_LARROW,
+            'R': curses.ACS_RARROW,
+        }
+
+        display_char = direction_to_display_char[state.player.direction]
+        self.arena_win.addch(state.player.position[1], state.player.position[0], display_char)
+
+    def draw(self, state):
+        self.__draw_tiles(state)
+        self.__draw_player(state)
 
         self.arena_win.box()
         self.arena_win.refresh()
