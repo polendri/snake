@@ -5,6 +5,9 @@ class CursesDisplay:
     def __init__(self, stdscr, config):
         # Make the cursor invisible
         curses.curs_set(0)
+        # Make input non-blocking
+        stdscr.nodelay(True)
+        
         margin_x = (curses.COLS - config.arena_size[0]) // 2
         margin_y = (curses.LINES - config.arena_size[1]) // 2
 

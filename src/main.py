@@ -1,5 +1,6 @@
 import curses
 from display import CursesDisplay
+from input_source import CursesInputSource
 from game import Config, Game, State
 
 def main(stdscr):
@@ -9,7 +10,8 @@ def main(stdscr):
         tick_rate=8
     )
     display = CursesDisplay(stdscr, config)
-    game = Game(config, display)
+    input_source = CursesInputSource(stdscr)
+    game = Game(config, display, input_source)
     game.run()
 
 if __name__ == '__main__':

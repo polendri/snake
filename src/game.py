@@ -24,6 +24,7 @@ class State:
         self.arena = [[Tiles.EMPTY for y in range(0, config.arena_size[1])] for x in range(0, config.arena_size[0])]
         self.player = Player((config.arena_size[0] // 2, config.arena_size[1] // 2))
         self.game_over = False
+        self.exit = False
 
     def spawn_orb(self):
         x_pos = random.randint(0, self.config.arena_size[0] - 1)
@@ -56,16 +57,40 @@ class State:
 
         return True
 
+class Input:
+    def __init__(self, action, key_pressed):
+        self.action = action
+        self.key_pressed = key_pressed
+
 class Game:
-    def __init__(self, config, display):
+    def __init__(self, config, display, input_source):
         self.config = config
         self.display = display
+        self.input_source = input_source
         self.state = State(config)
         for _ in range(0, 3):
             self.state.spawn_orb()
 
-    def __update(self):
-        self.state.try_move_player()
+    def __process_input(self, input_):
+        if self.state.game_over:
+            if input_.key_pressed:
+                self.state.exit = True
+        else:
+            if input_.action == 'PLAYER_UP':
+                self.state.player.direction = 'U'
+            elif input_.action == 'PLAYER_DOWN':
+                self.state.player.direction = 'D'
+            elif input_.action == 'PLAYER_LEFT':
+                self.state.player.direction = 'L'
+            elif input_.action == 'PLAYER_RIGHT':
+                self.state.player.direction = 'R'
+
+    def __update(self, input_):
+        self.__process_input(input_)
+
+        if not self.state.game_over:
+            self.state.try_move_player()
+
         self.display.draw(self.state)
 
     def run(self):
@@ -73,7 +98,12 @@ class Game:
         last_tick_time = time.time()
 
         while True:
-            self.__update()
+            input_ = self.input_source.get_input()
+            self.__update(input_)
+
+            if self.state.exit:
+                break
+
             current_time = time.time()
             sleep_time = tick_duration - (current_time - last_tick_time)
             if sleep_time > 0:
