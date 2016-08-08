@@ -2,7 +2,13 @@ import curses
 from game import Tile
 
 class CursesDisplay:
+    """Displays the snake game in a curses window."""
     def __init__(self, stdscr, config):
+        """Creates a new CursesDisplay.
+
+        stdscr: A curses main window object, as obtained from curses.wrapper() or curses.iniscr()
+        config: The game configuration settings
+        """
         # Make the cursor invisible
         curses.curs_set(0)
         # Make input non-blocking
@@ -28,12 +34,14 @@ class CursesDisplay:
         self.stdscr.refresh()
 
     def __draw_title(self):
+        """Draws the game title above the game arena."""
         title = 'SNAAAAKE'
         x_offset = (curses.COLS - len(title)) // 2
         y_offset = max(1, (curses.LINES - self.config.arena_size[1] - 2) // 4)
         self.stdscr.addstr(y_offset, x_offset, title)
 
     def __draw_tiles(self, state):
+        """Draws the arena tiles (tail segments, orbs etc) to the screen."""
         tile_to_display_char = {
             Tile.EMPTY: ' ',
             Tile.ORB: 'o',
@@ -54,13 +62,16 @@ class CursesDisplay:
                     pass
 
     def __draw_player(self, state):
+        """Draws the player to the screen."""
         self.arena_win.addch(state.player.position[1] + 1, state.player.position[0] + 1, '@')
 
     def __draw_message(self, message):
+        """Draws the specified one-line message to the screen below the game arena."""
         x_offset = (curses.COLS - len(message)) // 2
         self.message_win.addstr(0, x_offset, message)
 
     def draw(self, state):
+        """Draws the screen based on the specified game state."""
         self.__draw_tiles(state)
         self.__draw_player(state)
 
