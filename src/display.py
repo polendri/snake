@@ -8,14 +8,14 @@ class CursesDisplay:
         # Make input non-blocking
         stdscr.nodelay(True)
 
-        margin_x = (curses.COLS - config.arena_size[0]) // 2
-        margin_y = (curses.LINES - config.arena_size[1]) // 2
+        margin_x = (curses.COLS - config.arena_size[0] - 2) // 2
+        margin_y = (curses.LINES - config.arena_size[1] - 2) // 2
 
         self.stdscr = stdscr
         self.config = config
         self.arena_win = curses.newwin(
-            config.arena_size[1],
-            config.arena_size[0],
+            config.arena_size[1] + 2,
+            config.arena_size[0] + 2,
             max(4, margin_y),
             max(1, margin_x))
         self.message_win = curses.newwin(
@@ -45,7 +45,7 @@ class CursesDisplay:
                 tile = state.arena[x][y]
                 display_char = tile_to_display_char[tile]
                 try:
-                    self.arena_win.addch(y, x, display_char)
+                    self.arena_win.addch(y + 1, x + 1, display_char)
                 except (curses.error):
                     # addch() fails at the bottom-right character because it tries
                     # to scroll to a new line but no line exists. Best workaround
@@ -62,7 +62,7 @@ class CursesDisplay:
         }
 
         display_char = direction_to_display_char[state.player.direction]
-        self.arena_win.addch(state.player.position[1], state.player.position[0], display_char)
+        self.arena_win.addch(state.player.position[1] + 1, state.player.position[0] + 1, display_char)
 
     def __draw_message(self, message):
         x_offset = (curses.COLS - len(message)) // 2
