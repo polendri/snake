@@ -16,8 +16,8 @@ class CursesDisplay:
         self.arena_win = curses.newwin(
             config.arena_size[1] + 2,
             config.arena_size[0] + 2,
-            max(4, margin_y),
-            max(1, margin_x))
+            max(3, margin_y),
+            max(0, margin_x))
         self.message_win = curses.newwin(
             1,
             curses.COLS,
