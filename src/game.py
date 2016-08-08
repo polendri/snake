@@ -108,11 +108,11 @@ class State:
 
     def __is_valid_position(self, position):
         """Returns True if the specified position is valid (in bounds and unobstructed), False otherwise."""
-        return position[0] >= 0
+        return (position[0] >= 0
             and position[0] < self.config.arena_size[0]
             and position[1] >= 0
             and position[1] < self.config.arena_size[1]
-            and self.arena[position[0]][position[1]] != Tile.TAIL;
+            and self.arena[position[0]][position[1]] != Tile.TAIL)
 
 class Input:
     """Defines a single player input event."""
