@@ -76,7 +76,8 @@ class State:
         if (position[0] < 0
                 or position[0] >= self.config.arena_size[0]
                 or position[1] < 0
-                or position[1] >= self.config.arena_size[1]):
+                or position[1] >= self.config.arena_size[1]
+                or self.arena[position[0]][position[1]] == Tile.TAIL):
             return False
 
         return True
@@ -114,8 +115,9 @@ class Game:
 
         if not self.state.game_over:
             self.state.spawn_tail()
-            self.state.cut_tail()
             self.state.try_move_player()
+        if not self.state.game_over:
+            self.state.cut_tail()
             self.state.eat_orbs()
 
         self.display.draw(self.state)
