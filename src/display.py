@@ -73,8 +73,10 @@ class CursesDisplay:
         self.__draw_player(state)
 
         if state.game_over:
-            self.__draw_message('Game Over!')
-            self.message_win.refresh()
+            self.__draw_message('Game Over! Press any key to exit. Final score: {}'.format(state.player.length))
+        else:
+            self.__draw_message('Score: {}'.format(state.player.length))
 
         self.arena_win.box()
         self.arena_win.refresh()
+        self.message_win.refresh()
