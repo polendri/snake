@@ -1,5 +1,5 @@
 import curses
-from game import Tiles
+from game import Tile
 
 class CursesDisplay:
     def __init__(self, stdscr, config):
@@ -7,7 +7,7 @@ class CursesDisplay:
         curses.curs_set(0)
         # Make input non-blocking
         stdscr.nodelay(True)
-        
+
         margin_x = (curses.COLS - config.arena_size[0]) // 2
         margin_y = (curses.LINES - config.arena_size[1]) // 2
 
@@ -35,9 +35,9 @@ class CursesDisplay:
 
     def __draw_tiles(self, state):
         tile_to_display_char = {
-            Tiles.EMPTY: ' ',
-            Tiles.ORB: 'o',
-            Tiles.PLAYER_TAIL: curses.ACS_BLOCK,
+            Tile.EMPTY: ' ',
+            Tile.ORB: 'o',
+            Tile.TAIL: curses.ACS_BLOCK,
         }
 
         for y in range(0, self.config.arena_size[1]):
