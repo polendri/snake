@@ -30,27 +30,31 @@ class State:
         y_pos = random.randint(0, self.config.arena_size[1] - 1)
         self.arena[x_pos][y_pos] = Tiles.ORB
 
-    def update_player_position(self):
+    def try_move_player(self):
         player = self.player
         if player.direction == 'U':
-            player.position = (player.position[0], player.position[1] - 1)
+            next_position = (player.position[0], player.position[1] - 1)
         elif player.direction == 'D':
-            player.position = (player.position[0], player.position[1] + 1)
+            next_position = (player.position[0], player.position[1] + 1)
         elif player.direction == 'L':
-            player.position = (player.position[0] - 1, player.position[1])
+            next_position = (player.position[0] - 1, player.position[1])
         elif player.direction == 'R':
-            player.position = (player.position[0] + 1, player.position[1])
+            next_position = (player.position[0] + 1, player.position[1])
 
-    def update_failure_state(self):
-        player_x = self.player.position[0]
-        player_y = self.player.position[1]
-
-        # Check for out-of-bounds
-        if (player_x < 0
-                or player_x >= self.config.arena_size[0]
-                or player_y < 0
-                or player_y >= self.config.arena_size[1]):
+        if self.__is_valid_position(next_position):
+            self.player.position = next_position
+        else:
             self.game_over = True
+
+    def __is_valid_position(self, position):
+        # Check for out-of-bounds
+        if (position[0] < 0
+                or position[0] >= self.config.arena_size[0]
+                or position[1] < 0
+                or position[1] >= self.config.arena_size[1]):
+            return False
+
+        return True
 
 class Game:
     def __init__(self, config, display):
@@ -61,9 +65,7 @@ class Game:
             self.state.spawn_orb()
 
     def __update(self):
-        self.state.update_player_position()
-        self.state.update_failure_state()
-
+        self.state.try_move_player()
         self.display.draw(self.state)
 
     def run(self):

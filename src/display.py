@@ -3,19 +3,23 @@ from game import Tiles
 
 class CursesDisplay:
     def __init__(self, stdscr, config):
+        # Make the cursor invisible
         curses.curs_set(0)
+        margin_x = (curses.COLS - config.arena_size[0]) // 2
+        margin_y = (curses.LINES - config.arena_size[1]) // 2
 
-        width = config.arena_size[0] + 2
-        height = config.arena_size[1] + 2
-        x_offset = max(1, (curses.COLS - config.arena_size[0]) // 2)
-        y_offset = max(3, (curses.LINES - config.arena_size[1]) // 2)
-        self.config = config
         self.stdscr = stdscr
+        self.config = config
         self.arena_win = curses.newwin(
             config.arena_size[1],
             config.arena_size[0],
-            y_offset,
-            x_offset)
+            max(4, margin_y),
+            max(1, margin_x))
+        self.message_win = curses.newwin(
+            1,
+            curses.COLS,
+            max(margin_y + config.arena_size[1] + 1, (margin_y * 3 // 2) + config.arena_size[1]),
+            0)
 
         self.__draw_title()
         self.stdscr.refresh()
@@ -57,9 +61,17 @@ class CursesDisplay:
         display_char = direction_to_display_char[state.player.direction]
         self.arena_win.addch(state.player.position[1], state.player.position[0], display_char)
 
+    def __draw_message(self, message):
+        x_offset = (curses.COLS - len(message)) // 2
+        self.message_win.addstr(0, x_offset, message)
+
     def draw(self, state):
         self.__draw_tiles(state)
         self.__draw_player(state)
+
+        if state.game_over:
+            self.__draw_message('Game Over!')
+            self.message_win.refresh()
 
         self.arena_win.box()
         self.arena_win.refresh()
