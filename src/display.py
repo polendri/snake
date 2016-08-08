@@ -1,4 +1,5 @@
 import curses
+from game import Tiles
 
 class CursesDisplay:
     def __init__(self, stdscr, config):
@@ -49,4 +50,25 @@ class CursesDisplay:
             self.stdscr.addch(i, x_max, vertical_edge_char)
 
     def draw(self, state):
-        self.stdscr.getch()
+        tile_to_display_char = {
+            Tiles.EMPTY: ' ',
+            Tiles.ORB: 'o',
+            Tiles.PLAYER_TAIL: curses.ACS_BLOCK,
+        }
+
+        for y in range(0, self.config.arena_size[1]):
+            for x in range(0, self.config.arena_size[0]):
+                tile = state.arena[x][y]
+                display_char = tile_to_display_char[tile]
+                try:
+                    self.arena_win.addch(y, x, display_char)
+                except (curses.error):
+                    # addch() fails at the bottom-right character because it tries
+                    # to scroll to a new line but no line exists. Best workaround
+                    # I could find.
+                    # https://stackoverflow.com/questions/37648557/curses-error-add-wch-returned-an-error
+                    pass
+
+        self.stdscr.refresh()
+        self.arena_win.refresh()
+        self.arena_win.getch()
